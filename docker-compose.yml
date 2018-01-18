@@ -4,3 +4,17 @@ services:
     image: redis
     ports:
       - 6379:6379
+  real-time-location:
+    image: 127.0.0.1:5000/real-time-location
+    build: .
+    deploy:
+      replicas: 1
+    ports:
+      - 3000:3000
+    depends_on:
+      - redis
+    volumes:
+      - "./:/usr/src/app"
+    links:
+      - redis
+    entrypoint: "yarn run start"

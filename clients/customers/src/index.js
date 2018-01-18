@@ -12,10 +12,10 @@ let connectedUsers = 0
 const connectUser = (i) => {
   const roomName = `room${i}`
   const log = logForUser(i)
-  const host = 'http://localhost:3001'
+  const host = 'http://192.168.99.101:3000'
   console.log(`Connecting user ${i} in ${host}`)
 
-  const socket = io(host);
+  const socket = io(host, {transports: ['websocket']});
 
   socket.on('connect', () => {
     connectedUsers++

@@ -3,6 +3,7 @@ import { REDIS_HOST, REDIS_PORT, PORT } from './components/config'
 import redisSocketioAdapter from './components/redis-socketio-adapter';
 
 const main = () => {
+  console.log('main')
   const redisAdapter = redisSocketioAdapter(REDIS_HOST, REDIS_PORT)
   const io = socketServer(PORT, redisAdapter)
 
@@ -23,6 +24,10 @@ const main = () => {
     socket.on('pos', (data) => {
       console.log('updating pos ' + data.lat + ', ' + data.lng + ' in ' + data.room)
       socket.broadcast.to(data.room).emit('pos', data)
+    })
+
+    socket.on('disconnect', (reason) => {
+      console.log('disconnect reason ' + reason)
     })
   });
 }

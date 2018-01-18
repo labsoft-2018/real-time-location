@@ -18,9 +18,9 @@ const startSendingPos = (log, socket, interval, room) => {
 const connectUser = (i) => {
   const room = `room${i}`
   const log = logForUser(i)
-  const host = 'http://localhost:3000'
+  const host = 'http://192.168.99.102:3000'
   console.log(`Connecting user ${i} in ${host}`)
-  const socket = io(host);
+  const socket = io(host, {transports: ['websocket']});
   let intervalId
 
   socket.on('connect', () => {
