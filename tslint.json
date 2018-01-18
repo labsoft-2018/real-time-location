@@ -11,11 +11,13 @@
     "member-ordering": [false],
     "no-unused-variable": [true, {"ignore-pattern": "^React$"}],
     "semicolon": false,
-    "no-object-literal-type-assertion": false
+    "no-object-literal-type-assertion": false,
+    "no-console": false
   },
   "jsRules": {
     "curly": true,
-    "quotemark": [true, "single", "avoid-escape"]
+    "quotemark": [true, "single", "avoid-escape"],
+    "no-console": false
   },
   "rulesDirectory": []
 }

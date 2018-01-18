@@ -1,13 +1,30 @@
-import * as express from 'express'
+import socketServer from './components/socket'
+import { REDIS_HOST, REDIS_PORT, PORT } from './components/config'
+import redisSocketioAdapter from './components/redis-socketio-adapter';
 
-const PORT = 3000 || process.env.PORT
+const main = () => {
+  const redisAdapter = redisSocketioAdapter(REDIS_HOST, REDIS_PORT)
+  const io = socketServer(PORT, redisAdapter)
 
-const app = express()
-app.listen(PORT, (err) => {
-  if (err) {
-    console.error(err)
-    return
-  }
+  io.on('connection', (socket) => {
+    console.log('a user connected ' + socket.id);
 
-  console.log(`Listening on PORT ${PORT}`)
-})
+    socket.on('join', (data) => {
+      console.log('joining room ' + data)
+      socket.join(data, (err) => {
+        if (err) {
+          console.log('error')
+          return
+        }
+        socket.emit('joined')
+      })
+    })
+
+    socket.on('pos', (data) => {
+      console.log('updating pos ' + data.lat + ', ' + data.lng + ' in ' + data.room)
+      socket.broadcast.to(data.room).emit('pos', data)
+    })
+  });
+}
+
+main()
