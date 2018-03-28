@@ -50,10 +50,10 @@ export class SocketService<T> implements ILifecycle, ISocketService {
     console.log('starting socket io server')
     const port = config.getConfig().service.port
     const io = socketio(port)
-  // middleware
+
     io.use(async (socket: IAuthenticatedSocket, next) => {
       const tokenComponent = deps.token
-      const token = socket.handshake.query.token;
+      const token = socket.handshake.query.token
 
       try {
         const user = await tokenComponent.decode<IUser>(token)
@@ -67,6 +67,7 @@ export class SocketService<T> implements ILifecycle, ISocketService {
     io.adapter(redisAdapter.getRedisAdapter())
 
     io.on('connection', (socket) => {
+      console.log('new connection: ', socket.id)
       Object.keys(this.socketHandlerMap).forEach((event) => {
         const eventObject = this.socketHandlerMap[event]
 
