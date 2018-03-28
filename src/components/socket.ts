@@ -73,9 +73,12 @@ export class SocketService<T> implements ILifecycle, ISocketService {
       for (const event of Object.keys(this.socketHandlerMap)) {
         const eventObject = this.socketHandlerMap[event]
 
-        socket.on(event, async (data) => {
+        socket.on(event, async (data, fn) => {
           try {
-            await eventObject.handler(socket, data, deps as any, io)
+            const response = await eventObject.handler(socket, data, deps as any, io)
+            if (response !== undefined && fn) {
+              fn(response)
+            }
           } catch (err) {
             console.log('emitting error:', err.toString())
             socket.emit(`${event}-error`, err.toString())

@@ -2,11 +2,11 @@ import { IComponents } from './system';
 import { ISocketHandlerMap } from './components/socket';
 import * as R from 'ramda'
 
+const isEven = (x) => x % 2 === 0
+const isOdd = (x) => !isEven(x)
+
 const canUserFollowCarrier = (userId: string, carrierId: string) => {
-  if (userId === '2' && carrierId === '1') {
-    return true
-  }
-  return false
+  return R.or(R.all(isEven, [userId, carrierId]), R.all(isOdd, [userId, carrierId]))
 }
 
 const hasScopes = (requiredScopes, scopes) => R.not(R.isEmpty(R.intersection(requiredScopes, scopes)))
@@ -24,12 +24,14 @@ const socketJoin = (socket: SocketIO.Socket, roomName: string) => new Promise((r
 export const socketHandlers: ISocketHandlerMap<IComponents> = {
   pos: {
     handler: async (socket, data, components: IComponents, io: SocketIO.Server) => {
-      const isCarrier = hasScopes(['carrier'], socket.user.scopes)
+      const carrierId = socket.user.user
+      const scopes = socket.user.scopes
+
+      const isCarrier = hasScopes(['carrier'], scopes)
       if (!isCarrier) {
         throw new Error('Only carrier can emit position')
       }
-      // user.user is the carrierId
-      const carrierId = socket.user.user
+
       // If this socket is not on the room carrierId, join
       if (!socket.rooms[socket.user.user]) {
         console.log(`Carrier ${carrierId} is joining his room`)
@@ -59,6 +61,7 @@ export const socketHandlers: ISocketHandlerMap<IComponents> = {
         // Now the user will start receiving positions
         await socketJoin(socket, carrierId)
         console.log(`User ${userId} started tracking carrier ${carrierId}`)
+        return true
       } catch (err) {
         throw new Error('Failed to join room')
       }
