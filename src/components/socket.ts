@@ -14,7 +14,7 @@ export interface IAuthenticatedSocket extends SocketIO.Socket {
 
 export interface ISocketHandlerMap<T> {
   [event: string]: {
-    handler(socket: IAuthenticatedSocket, data: any, components: T): any,
+    handler(socket: IAuthenticatedSocket, data: any, components: T, io: SocketIO.Server): any,
   }
 }
 
@@ -51,6 +51,7 @@ export class SocketService<T> implements ILifecycle, ISocketService {
     const port = config.getConfig().service.port
     const io = socketio(port)
 
+    // TODO: Extract to function passed as parameter
     io.use(async (socket: IAuthenticatedSocket, next) => {
       const tokenComponent = deps.token
       const token = socket.handshake.query.token
@@ -68,13 +69,19 @@ export class SocketService<T> implements ILifecycle, ISocketService {
 
     io.on('connection', (socket) => {
       console.log('new connection: ', socket.id)
-      Object.keys(this.socketHandlerMap).forEach((event) => {
+
+      for (const event of Object.keys(this.socketHandlerMap)) {
         const eventObject = this.socketHandlerMap[event]
 
-        socket.on(event, (data) => {
-          eventObject.handler(socket, data, deps as any)
+        socket.on(event, async (data) => {
+          try {
+            await eventObject.handler(socket, data, deps as any, io)
+          } catch (err) {
+            console.log('emitting error:', err.toString())
+            socket.emit(`${event}-error`, err.toString())
+          }
         })
-      })
+      }
     })
     this.io = io
   }

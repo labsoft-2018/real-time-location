@@ -4,6 +4,12 @@ import { mainSystem } from './system';
 const main = async () => {
   const components = await mainSystem.start()
   console.log('System started')
+
+  // const token = await components.token.encode({
+  //   user: '4',
+  //   scopes: ['admin'],
+  // })
+  // console.log(token)
 }
 
 main()
@@ -11,11 +17,6 @@ main()
   console.log(err)
 })
 
-  // const token = await components.token.encode({
-  //   user: '1',
-  //   scopes: ['carrier'],
-  // })
-  // console.log(token)
   // const redisAdapter = redisSocketioAdapter(REDIS_HOST, REDIS_PORT)
   // const io = socketServer(PORT, redisAdapter)
 
