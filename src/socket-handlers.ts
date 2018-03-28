@@ -2,10 +2,10 @@ import { IComponents } from './system';
 import { ISocketHandlerMap } from './components/socket';
 import * as R from 'ramda'
 
-const isEven = (x) => x % 2 === 0
+const isEven = (x) => R.equals(R.modulo(x, 2), 0)
 const isOdd = (x) => !isEven(x)
 
-const canUserFollowCarrier = (userId: string, carrierId: string) => {
+const canUserFollowCarrier = (userId: number, carrierId: number) => {
   return R.or(R.all(isEven, [userId, carrierId]), R.all(isOdd, [userId, carrierId]))
 }
 
@@ -52,7 +52,7 @@ export const socketHandlers: ISocketHandlerMap<IComponents> = {
         throw new Error('Only users can follow carriers')
       }
 
-      const authorizedToFollow = canUserFollowCarrier(userId, carrierId)
+      const authorizedToFollow = canUserFollowCarrier(parseInt(userId, 10), parseInt(carrierId, 10))
       if (!authorizedToFollow) {
         throw new Error('You are not authorized to follow this carrier')
       }

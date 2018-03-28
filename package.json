@@ -4,7 +4,8 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "nodemon src/index.ts -x ts-node"
+    "start": "ts-node src/index.ts",
+    "dev": "nodemon src/index.ts -x ts-node"
   },
   "dependencies": {
     "@labsoft/common-js": "^1.0.0",

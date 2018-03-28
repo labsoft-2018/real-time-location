@@ -46,6 +46,17 @@ export class ConfigComponent implements IConfigComponent, ILifecycle {
   }
 
   public start() {
+    const {
+      REDIS_HOST,
+      REDIS_PORT,
+      NODE_ENV,
+    } = process.env
+
+    if (!REDIS_HOST || !REDIS_PORT) {
+      throw new Error('Provide REDIS configuration')
+    }
+    const env = NODE_ENV || 'dev'
+
     // TODO: Read from file!
     // TODO: Different configs for different envs
     console.log('[Config] Starting...')
@@ -62,19 +73,15 @@ export class ConfigComponent implements IConfigComponent, ILifecycle {
         issuer: 'quack-pack',
         audience: 'user',
         jwtDuration: '30d',
-        publicKeyPath: 'test/pubkey.pem',
-        privateKeyPath: 'test/privkey.pem',
+        publicKeyPath: `${env}/pubkey.pem`,
+        privateKeyPath: `${env}/privkey.pem`,
         bucketName: 'labsoft-secrets',
       },
       redis: {
-        host: 'localhost',
-        port: 6379,
+        host: REDIS_HOST,
+        port: parseInt(REDIS_PORT, 10),
       },
     }
     console.log('[Config] Ok!')
   }
 }
-
-// export const REDIS_HOST = 'localhost'
-// export const REDIS_PORT = 6379
-// export const PORT = process.env.PORT || 3000
