@@ -12,7 +12,8 @@
     "no-unused-variable": [true, {"ignore-pattern": "^React$"}],
     "semicolon": false,
     "no-object-literal-type-assertion": false,
-    "no-console": false
+    "no-console": false,
+    "no-submodule-imports": false
   },
   "jsRules": {
     "curly": true,
